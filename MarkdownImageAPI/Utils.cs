@@ -78,7 +78,6 @@ public class Utils
         {
             Page = await browser.NewPageAsync();
         }
-        var guid = Guid.NewGuid().ToString();
         var opt = new MarkdownPipelineBuilder()
             .UseAbbreviations()
             .UsePipeTables()
@@ -100,7 +99,7 @@ public class Utils
         {
             Timeout = args.TimeOut
         });
-        await Page.GoToAsync($"http://docs.oiapi.net/view.php?id={guid}&theme={(args.Dark ? "dark" : "light")}", args.TimeOut).ConfigureAwait(false);
+        await Page.GoToAsync($"http://docs.oiapi.net/view.php?theme={(args.Dark ? "dark" : "light")}", args.TimeOut).ConfigureAwait(false);
         await Page.EvaluateExpressionAsync($"document.querySelector(\"#app > h1\").innerHTML = '{postData.Trim()}'");
         var app = await Page.QuerySelectorAsync("body").ConfigureAwait(false);
         if (args.AutoWidth)
