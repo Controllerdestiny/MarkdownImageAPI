@@ -61,7 +61,7 @@ jobs:
       - name: Update Nightly Tag
         run: |
           git tag -f V1.0.0.0
-          git push -f Latest Version
+          git push -f origin V1.0.0.0
       - name: Download Artifacts
         uses: actions/download-artifact@v3
         with:
@@ -70,8 +70,8 @@ jobs:
       - name: Update Nightly Release
         uses: ncipollo/release-action@v1
         with:
-          tag: v${{ steps.setenvo.outputs.TAG_NAME }}
-          name: Release v${{ steps.setenvo.outputs.TAG_NAME }}
+          tag: V1.0.0.0
+          name: Latest Version
           body: '> ⚠️发布版本.'
           artifacts: |
             ./bin/*
