@@ -79,20 +79,33 @@ public class Utils
             Page = await browser.NewPageAsync();
         }
         var opt = new MarkdownPipelineBuilder()
-            .UseAbbreviations()
-            .UsePipeTables()
+            .UseAdvancedExtensions()
             .UseAlertBlocks()
-            .UseAutoLinks()
-            .UseYamlFrontMatter()
-            .UseTaskLists()
-            .UseAutoIdentifiers()
-            .UseListExtras()
-            .UseBootstrap()
-            .UseDefinitionLists()
-            .UseYamlFrontMatter()
-            .UseCitations()
-            .UseEmojiAndSmiley()
+            .UsePipeTables()
             .UseEmphasisExtras()
+            .UseListExtras()
+            .UseSoftlineBreakAsHardlineBreak()
+            .UseFootnotes()
+            .UseFooters()
+            .UseCitations()
+            .UseGenericAttributes()
+            .UseGridTables()
+            .UseAbbreviations()
+            .UseEmojiAndSmiley()
+            .UseDefinitionLists()
+            .UseCustomContainers()
+            .UseFigures()
+            .UseMathematics()
+            .UseBootstrap()
+            .UseMediaLinks()
+            .UseSmartyPants()
+            .UseAutoIdentifiers()
+            .UseTaskLists()
+            .UseDiagrams()
+            .UseYamlFrontMatter()
+            .UseNonAsciiNoEscape()
+            .UseAutoLinks()
+            .UseGlobalization()
             .Build();
         var postData = Markdig.Markdown.ToHtml(args.MarkdownContent, opt);
         await Page.WaitForNetworkIdleAsync(new()
@@ -100,7 +113,7 @@ public class Utils
             Timeout = args.TimeOut
         });
         await Page.GoToAsync($"http://docs.oiapi.net/view.php?theme={(args.Dark ? "dark" : "light")}", args.TimeOut).ConfigureAwait(false);
-        await Page.EvaluateExpressionAsync($"document.querySelector('#app').innerHTML = '{postData.Replace("\r\n", " ").Replace("\n", " ").Replace("\r", " ").Trim()}'");
+        await Page.EvaluateExpressionAsync($"document.querySelector('#app').innerHTML = '{postData.Replace("\r\n", "\\n").Replace("\n", "\\n").Replace("\r", "\\n").Trim()}'");
         var app = await Page.QuerySelectorAsync("body").ConfigureAwait(false);
         if (args.AutoWidth)
             await app.EvaluateFunctionAsync("element => element.style.width = 'fit-content'");
