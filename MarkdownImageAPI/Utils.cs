@@ -100,7 +100,7 @@ public class Utils
             Timeout = args.TimeOut
         });
         await Page.GoToAsync($"http://docs.oiapi.net/view.php?theme={(args.Dark ? "dark" : "light")}", args.TimeOut).ConfigureAwait(false);
-        await Page.EvaluateExpressionAsync($"document.querySelector(\"#app > h1\").innerHTML = '{postData.Trim()}'");
+        await Page.EvaluateExpressionAsync($"document.querySelector('#app').innerHTML = '{postData.Replace("\r\n", " ").Replace("\n", " ").Replace("\r", " ").Trim()}'");
         var app = await Page.QuerySelectorAsync("body").ConfigureAwait(false);
         if (args.AutoWidth)
             await app.EvaluateFunctionAsync("element => element.style.width = 'fit-content'");
