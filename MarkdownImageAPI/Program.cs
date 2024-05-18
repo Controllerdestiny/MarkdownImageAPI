@@ -13,9 +13,14 @@ class Program
         Utils.Kill();
         LoadConfig();
         ParseCommandArgs();
+        var md = "# 标题 \n ##标题2";
         await new BrowserFetcher().DownloadAsync();
-        HttpReceive.Start();
-        Console.ReadLine();
+        await Utils.Markdown(new()
+        {
+            MarkdownContent = md
+        });
+        //HttpReceive.Start();
+        //Console.ReadLine();
     }
 
     

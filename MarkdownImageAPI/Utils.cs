@@ -10,6 +10,14 @@ public class Utils
 
     private static IPage? Page = null;
 
+    private static Dictionary<string, string> ReplaceDic = new()
+    {
+        { "\n", "\\n" },
+        { "\r\n", "\\n" },
+        { "\r", "\\n" },
+        { "'", "\\'" }
+    };
+
     public static Dictionary<string, string> ParseArguements(string[] args)
     {
         string text = null;
@@ -65,7 +73,7 @@ public class Utils
         {
             var option = new LaunchOptions()
             {
-                Headless = !Program.Config.EnableHeadLess,
+                Headless = Program.Config.EnableHeadLess,
                 Args = [.. Program.Config.ChromeCommandArgs]
             };
             if (!string.IsNullOrEmpty(Program.Config.ChromePath))
@@ -112,9 +120,15 @@ public class Utils
         {
             Timeout = args.TimeOut
         });
+        foreach (var (oldChar, newChar) in ReplaceDic)
+        {
+            postData = postData.Replace(oldChar, newChar);
+        }
         await Page.GoToAsync($"http://docs.oiapi.net/view.php?theme={(args.Dark ? "dark" : "light")}", args.TimeOut).ConfigureAwait(false);
-        await Page.EvaluateExpressionAsync($"document.querySelector('#app').innerHTML = '{postData.Replace("\r\n", "\\n").Replace("\n", "\\n").Replace("\r", "\\n").Trim()}'");
+        await Page.EvaluateExpressionAsync($"document.querySelector('#app').innerHTML = '{postData}'");
         var app = await Page.QuerySelectorAsync("body").ConfigureAwait(false);
+       await Page.EvaluateExpressionAsync("document.querySelector(\"#app\").style.backgroundColor = '#ccc'");
+        await app.EvaluateFunctionAsync("element => element.style.backgroundColor = '#ccc'");
         if (args.AutoWidth)
             await app.EvaluateFunctionAsync("element => element.style.width = 'fit-content'");
         var clip = await app!.BoundingBoxAsync().ConfigureAwait(false);
