@@ -33,7 +33,7 @@ jobs:
         run: sudo apt-get install zip
 
       - name: 生成压缩包
-        run: zip -r -j MarkdownImageAPI_${{ matrix.runtimeIdentifier }}_8.0.zip TerrariaMap/bin/Release/net8.0/${{ matrix.runtimeIdentifier }}/publish/
+        run: zip -r -j MarkdownImageAPI_${{ matrix.runtimeIdentifier }}_8.0.zip MarkdownImageAPI/bin/Release/net8.0/${{ matrix.runtimeIdentifier }}/publish/
       
       - name: 上传临时文件
         uses: actions/upload-artifact@v3
