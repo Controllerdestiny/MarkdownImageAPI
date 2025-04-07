@@ -60,6 +60,7 @@ jobs:
           name: MarkdownImageAPI_*
           path: bin
           skip_unpack: true
+          name_is_regexp: true
           merge_multiple: true
           search_artifacts: true
           
