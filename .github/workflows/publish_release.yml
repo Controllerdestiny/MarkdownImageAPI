@@ -46,16 +46,16 @@ jobs:
         with:
           fetch-depth: 0
           
-      - name: 更新发布标签
-        run: |
-          git tag -f V1.0.0.0
-          git push -f origin V1.0.0.0
-          
       - name: 下载临时插文件
         uses: dawidd6/action-download-artifact@v9
         with:
           path: bin
           skip_unpack: true
+
+      - name: 更新发布标签
+        run: |
+          git tag -f V1.0.0.0
+          git push -f origin V1.0.0.0
           
       - name: 发布Release
         uses: ncipollo/release-action@v1
@@ -81,4 +81,4 @@ jobs:
       - uses: geekyeggo/delete-artifact@v5
         with:
           name: |
-            Artifacts
+            *
