@@ -58,6 +58,7 @@ jobs:
         with:
           path: bin
           skip_unpack: true
+          merge: true
           
       - name: 发布Release
         uses: ncipollo/release-action@v1
@@ -66,7 +67,7 @@ jobs:
           name: "最新版本"
           body: ""
           artifacts: |
-            ./bin/*
+            ./bin/**
           allowUpdates: true
           removeArtifacts: true
               
