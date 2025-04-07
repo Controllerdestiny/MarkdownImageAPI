@@ -43,6 +43,7 @@ jobs:
     needs: Build
     permissions:
          contents: write
+         actions: read
     steps:
       - uses: actions/checkout@v4
         with:
@@ -56,9 +57,11 @@ jobs:
       - name: 下载临时文件
         uses: dawidd6/action-download-artifact@v9
         with:
+          name: MarkdownImageAPI_*
           path: bin
           skip_unpack: true
-          merge: true
+          merge_multiple: true
+          search_artifacts: true
           
       - name: 发布Release
         uses: ncipollo/release-action@v1
