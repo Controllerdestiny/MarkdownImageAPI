@@ -57,12 +57,10 @@ jobs:
       - name: 下载临时文件
         uses: dawidd6/action-download-artifact@v9
         with:
-          name: MarkdownImageAPI_*
+          name: MarkdownImageAPI
           path: bin
           skip_unpack: true
           name_is_regexp: true
-          merge_multiple: true
-          search_artifacts: true
           
       - name: 发布Release
         uses: ncipollo/release-action@v1
