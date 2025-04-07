@@ -36,9 +36,9 @@ jobs:
         run: zip -r -j MarkdownImageAPI_${{ matrix.runtimeIdentifier }}_8.0.zip MarkdownImageAPI/bin/Release/net8.0/${{ matrix.runtimeIdentifier }}/publish/
       
       - name: 上传临时文件
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: Artifacts
+          name: MarkdownImageAPI_${{ matrix.runtimeIdentifier }}_8.0
           path: MarkdownImageAPI_${{ matrix.runtimeIdentifier }}_8.0.zip
           
   LatestRelease:
@@ -56,11 +56,13 @@ jobs:
         run: |
           git tag -f V1.0.0.0
           git push -f origin V1.0.0.0
+          
       - name: 下载临时插文件
-        uses: actions/download-artifact@v3
+        uses: dawidd6/action-download-artifact@v9
         with:
-          name: Artifacts
-          path: ./bin
+          path: bin
+          skip_unpack: true
+          
       - name: 发布Release
         uses: ncipollo/release-action@v1
         with:
