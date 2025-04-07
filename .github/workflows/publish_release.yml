@@ -1,18 +1,19 @@
-name: 发布
-
-on:
+name: 构建程序
+on: 
   push:
-    branches: [ "master"]
-    
+    branches:
+      - '**'
+  pull_request:
+  
 jobs:
   Build:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        runtimeIdentifier: [ win-x64, win-x86, linux-x64, linux-arm, linux-arm64, osx-x64, osx-arm64, linux-musl-x64, linux-musl-arm64 ]
+        runtimeIdentifier: [ win-x64, linux-x64]
 
-    name: 构建插件
+    name: 构建 MarkdownImageAPI
     steps:
       - uses: actions/checkout@v4
         with:
@@ -25,17 +26,18 @@ jobs:
         with:
           dotnet-version: 8.0.x
           
-      - name: 构建插件
+      - name: 编译
         run: |
-          dotnet publish MarkdownImageAPI/MarkdownImageAPI.csproj --no-self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=none -p:RuntimeIdentifier=${{ matrix.runtimeIdentifier }} --framework net8.0
-                
+           dotnet publish MarkdownImageAPI/MarkdownImageAPI.csproj --no-self-contained -p:PublishSingleFile=true -p:RuntimeIdentifier=${{ matrix.runtimeIdentifier }} --framework net8.0           
+           
       - name: 上传临时文件
         uses: actions/upload-artifact@v4
         with:
-          name: MarkdownImageAPI_${{ matrix.runtimeIdentifier }}_8.0.zip
+          name: MarkdownImageAPI_${{ matrix.runtimeIdentifier }}_8.0
           path: MarkdownImageAPI/bin/Release/net8.0/${{ matrix.runtimeIdentifier }}/publish/
           
   LatestRelease:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     name: 发布
     runs-on: ubuntu-latest
     needs: Build
@@ -46,16 +48,16 @@ jobs:
         with:
           fetch-depth: 0
           
-      - name: 下载临时插文件
-        uses: dawidd6/action-download-artifact@v9
-        with:
-          path: bin
-          skip_unpack: true
-
       - name: 更新发布标签
         run: |
           git tag -f V1.0.0.0
           git push -f origin V1.0.0.0
+
+      - name: 下载临时文件
+        uses: dawidd6/action-download-artifact@v9
+        with:
+          path: bin
+          skip_unpack: true
           
       - name: 发布Release
         uses: ncipollo/release-action@v1
@@ -71,7 +73,7 @@ jobs:
          
   ClearTempArtifacts:
     name: 清理临时文件
-    if: always()
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master' && always()
     runs-on: ubuntu-latest
     needs:
       - LatestRelease
@@ -81,4 +83,4 @@ jobs:
       - uses: geekyeggo/delete-artifact@v5
         with:
           name: |
-            *
+            Artifacts
