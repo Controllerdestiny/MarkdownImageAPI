@@ -4,7 +4,7 @@ using MarkdownImageAPI;
 Utils.Kill();
 
 Console.Title = "MarkdownImageAPI";
-if(!File.Exists("appsettings.json"))
+if (!File.Exists("appsettings.json"))
 {
     var assembly = Assembly.GetExecutingAssembly();
     using var stream = assembly.GetManifestResourceStream("MarkdownImageAPI.Resources.appsettings.json");

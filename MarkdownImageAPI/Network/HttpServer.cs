@@ -1,11 +1,9 @@
-﻿using MarkdownImageAPI.Interface;
+﻿using System.Net;
+using System.Reflection;
+using MarkdownImageAPI.Interface;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System.Net;
-using System.Reflection;
-using System.Text;
 
 namespace MarkdownImageAPI.Network;
 
@@ -37,13 +35,13 @@ public class HttpServer : IHostedService
         HttpListener.Start();
         _logger.LogInformation("[HttpReceive] 监听中: http://*:{Port}/", _configuration["Server:Port"]);
         try
-        { 
+        {
             while (true)
             {
-            
+
                 await ReceiveLoopAsync(await HttpListener.GetContextAsync().WaitAsync(cancellationToken), cancellationToken);
             }
-        
+
         }
         catch (TaskCanceledException)
         {
@@ -60,8 +58,8 @@ public class HttpServer : IHostedService
         var path = httpListenerContext.Request.Url?.AbsolutePath;
         var method = httpListenerContext.Request.HttpMethod;
         var context = _httpRequestContexts
-            .FirstOrDefault(x => x.Path == path && x.Method == method); 
-        if(context is null)
+            .FirstOrDefault(x => x.Path == path && x.Method == method);
+        if (context is null)
         {
             _logger.LogWarning("[HttpReceive] 未找到处理器: {Path} {Method}", path, method);
             httpListenerContext.Response.StatusCode = (int)HttpStatusCode.NotFound;
@@ -77,8 +75,7 @@ public class HttpServer : IHostedService
         catch (Exception ex)
         {
             _logger.LogError("[HttpReceive] 处理请求异常: {Path} {Method} {ErrorMessage}", path, method, ex);
-            httpListenerContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-            httpListenerContext.Response.Close();
+            args.ReplyJson(new { code = 500, msg = $"请求错误: {ex.Message}" }, HttpStatusCode.InternalServerError);
         }
     }
 

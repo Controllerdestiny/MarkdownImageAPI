@@ -1,10 +1,10 @@
+using System.Diagnostics;
 using Markdig;
 using MarkdownImageAPI.Handlers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PuppeteerSharp;
 using PuppeteerSharp.Media;
-using System.Diagnostics;
 namespace MarkdownImageAPI;
 
 public class Utils
