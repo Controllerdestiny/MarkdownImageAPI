@@ -8,7 +8,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\appsettings.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\appsettings.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Markdig" Version="0.37.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.3" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="PuppeteerSharp" Version="17.0.0" />
   </ItemGroup>

@@ -1,4 +1,7 @@
 using Markdig;
+using MarkdownImageAPI.Handlers;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using PuppeteerSharp;
 using PuppeteerSharp.Media;
 using System.Diagnostics;
@@ -15,44 +18,10 @@ public class Utils
         { "\n", "\\n" },
         { "\r\n", "\\n" },
         { "\r", "\\n" },
-        { "'", "\\'" }
+        { "'", "\\'" },
+        { "\"", "\\\"" }
     };
 
-    public static Dictionary<string, string> ParseArguements(string[] args)
-    {
-        string text = null;
-        string text2 = "";
-        Dictionary<string, string> dictionary = new Dictionary<string, string>();
-        for (int i = 0; i < args.Length; i++)
-        {
-            if (args[i].Length == 0)
-            {
-                continue;
-            }
-            if (args[i][0] == '-' || args[i][0] == '+')
-            {
-                if (text != null)
-                {
-                    dictionary.Add(text.ToLower(), text2);
-                }
-                text = args[i];
-                text2 = "";
-            }
-            else
-            {
-                if (text2 != "")
-                {
-                    text2 += " ";
-                }
-                text2 += args[i];
-            }
-        }
-        if (text != null)
-        {
-            dictionary.Add(text.ToLower(), text2);
-        }
-        return dictionary;
-    }
 
     public static void Kill()
     {
@@ -65,21 +34,18 @@ public class Utils
         }
     }
 
-    public static async Task<(byte[], TimeSpan)> Markdown(ReceiveArgs args)
+    public static async Task<(byte[] buffer, TimeSpan Take)> Markdown(MarkdownRequestArgs args)
     {
         Stopwatch stopwatch = new();
         stopwatch.Start();
         if (browser == null || !browser.IsConnected || browser.IsClosed || browser.Process.HasExited)
         {
+            await new BrowserFetcher().DownloadAsync();
+            var config = MarkdownApp.IHost?.Services.GetRequiredService<IConfiguration>();
             var option = new LaunchOptions()
             {
-                Headless = Program.Config.EnableHeadLess,
-                Args = [.. Program.Config.ChromeCommandArgs]
+                Headless = config?.GetValue<bool>("EnableHeadLess") ?? true,
             };
-            if (!string.IsNullOrEmpty(Program.Config.ChromePath))
-            {
-                option.ExecutablePath = Program.Config.ChromePath;
-            }
             browser = await Puppeteer.LaunchAsync(option);
         }
         if (Page == null || Page.IsClosed || Page.Browser.Process.HasExited)
@@ -125,9 +91,10 @@ public class Utils
             postData = postData.Replace(oldChar, newChar);
         }
         await Page.GoToAsync($"http://docs.oiapi.net/view.php?theme={(args.Dark ? "dark" : "light")}", args.TimeOut).ConfigureAwait(false);
+        await Page.EvaluateExpressionAsync("document.body.style.backgroundColor = 'white'");
         await Page.EvaluateExpressionAsync($"document.querySelector('#app').innerHTML = '{postData}'");
         var app = await Page.QuerySelectorAsync("body").ConfigureAwait(false);
-       await Page.EvaluateExpressionAsync("document.querySelector(\"#app\").style.backgroundColor = '#ccc'");
+        await Page.EvaluateExpressionAsync("document.querySelector(\"#app\").style.backgroundColor = '#ccc'");
         await app.EvaluateFunctionAsync("element => element.style.backgroundColor = '#ccc'");
         if (args.AutoWidth)
             await app.EvaluateFunctionAsync("element => element.style.width = 'fit-content'");

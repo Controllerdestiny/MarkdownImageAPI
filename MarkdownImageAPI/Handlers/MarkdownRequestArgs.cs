@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
 
-namespace MarkdownImageAPI;
+namespace MarkdownImageAPI.Handlers;
 
-public class ReceiveArgs
+public class MarkdownRequestArgs
 {
     [JsonProperty("auto_width")]
     public bool AutoWidth { get; init; } = true;
