@@ -28,18 +28,12 @@ jobs:
       - name: 构建插件
         run: |
           dotnet publish MarkdownImageAPI/MarkdownImageAPI.csproj --no-self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=none -p:RuntimeIdentifier=${{ matrix.runtimeIdentifier }} --framework net8.0
-          
-      - name: 安装 zip
-        run: sudo apt-get install zip
-
-      - name: 生成压缩包
-        run: zip -r -j MarkdownImageAPI_${{ matrix.runtimeIdentifier }}_8.0.zip MarkdownImageAPI/bin/Release/net8.0/${{ matrix.runtimeIdentifier }}/publish/
-      
+                
       - name: 上传临时文件
         uses: actions/upload-artifact@v4
         with:
-          name: MarkdownImageAPI_${{ matrix.runtimeIdentifier }}_8.0
-          path: MarkdownImageAPI_${{ matrix.runtimeIdentifier }}_8.0.zip
+          name: MarkdownImageAPI_${{ matrix.runtimeIdentifier }}_8.0.zip
+          path: MarkdownImageAPI/bin/Release/net8.0/${{ matrix.runtimeIdentifier }}/publish/
           
   LatestRelease:
     name: 发布
