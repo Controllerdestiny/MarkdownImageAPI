@@ -57,7 +57,7 @@ jobs:
       - name: 下载临时文件
         uses: dawidd6/action-download-artifact@v9
         with:
-          name: MarkdownImageAPI
+          name: MarkdownImageAPI.*
           path: bin
           skip_unpack: true
           name_is_regexp: true
